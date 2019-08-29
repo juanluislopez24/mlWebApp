@@ -42,7 +42,27 @@
           <v-btn :disabled="fileTrue" color="primary" @click="inferImage()">Infer</v-btn>
         </v-col>
       </v-row> -->
-      <v-row class="mb-6" algin="start" justify="center">
+      <v-row align="start" justify="center">
+        <v-col cols=1>
+          <v-switch v-model="knn" label="Activate Knn"></v-switch>
+        </v-col>
+      </v-row>
+      <v-row align="start" justify="center">
+        <v-col cols=5>
+          <v-text-field
+            label="New Class"
+            v-model="newClass"
+            placeholder="Type your new class to train..."
+            outlined
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row align="start" justify="center">
+        <v-col cols=1>
+          <v-btn color="primary" width=50% large @click="addExample()">Train</v-btn>
+        </v-col>
+      </v-row>
+      <v-row class="mb-6" align="start" justify="center">
         <v-col cols=7>
           <v-simple-table>
             <thead>
@@ -60,6 +80,7 @@
           </v-simple-table>
         </v-col>
       </v-row>
+      
     </v-container>
     
 
@@ -72,6 +93,7 @@
 
 <script>
 import * as mobilenet from '@tensorflow-models/mobilenet'
+import * as knnClassifier from '@tensorflow-models/knn-classifier'
 import * as tf from '@tensorflow/tfjs'
 // import camera from 'vue-camera'
 import { WebCam } from "vue-web-cam";
@@ -81,13 +103,17 @@ const NUMBER_OF_CHANNELS = 3
 export default {
   name: 'MobileNet',
   data: () => ({
+    newClass: '',
     net:null,
+    classifier: knnClassifier.create(),
     fileTrue: true,
     file: null,
     stop: true,
+    knn: false,
     display: 'none',
     displayImg: 'flex',
     fileName: '  .',
+    classes:[],
     fileData: 'https://66.media.tumblr.com/898419954d6ff3f7b307c8d128db94c6/tumblr_p814cuvBqb1wzvt9qo3_500.gif',
     results: [],
     rules: [
@@ -110,22 +136,35 @@ export default {
       })
     },
 
-    inferImage(){
+    addExample() {
+      console.log()
+      let activation
+      if(this.newClass != '' || this.newClass != null){
+        if(stop == true){
+          activation = this.net.infer(document.getElementById('img'), 'conv_preds')
+        }
+        else{
+          activation = this.net.infer(document.getElementById('webcam'), 'conv_preds')
+        }
+        this.classifier.addExample(activation, this.newClass)
+        console.log('added')
+      }
+    },
+
+    async inferImage(){
       this.stop=true
       if(this.file != null){
-        console.log('Loading mobilenet..')
-        mobilenet.load().then((net) => {
-          console.log('Sucessfully loaded model')
-          const imgEl = document.getElementById('img')
-          const image = {
-            'data': this.fileData,
-
-          }
-          net.classify(imgEl).then((result) => {
-            console.log(result)
-            this.results = result
-          })
-        })        
+        const result = await this.classify(document.getElementById('img'))
+        this.results = result
+        // console.log(result)
+        // mobilenet.load().then((net) => {
+        //   console.log('Sucessfully loaded model')
+        //   const imgEl = document.getElementById('img')
+        //   net.classify(imgEl).then((result) => {
+        //     console.log(result)
+        //     this.results = result
+        //   })
+        // })        
       }
     },
 
@@ -135,14 +174,48 @@ export default {
       const webcamElement = document.getElementById('webcam')
       await this.setupWebcam()
       while (true) {
-        const result = await this.net.classify(webcamElement);
+    
+        // use mobilenet
+        // const result = await this.net.classify(webcamElement);
+
+        // use knn
+        // const activation = net.infer(webcamElement, 'conv_preds')
+        // const result = await this.classifier.predictClass(activation)
+        const result = await this.classify(webcamElement)
+
         this.results = result
         console.log(result)
+    
         if(this.stop == true){
           break
         }
         await tf.nextFrame();
         
+      }
+    },
+
+    async classify(img){
+      if(this.knn == true){
+        if(this.classifier.getNumClasses() > 0){
+          const activation = this.net.infer(img, 'conv_preds')
+          const result = await this.classifier.predictClass(activation)
+          var res = result.confidences
+          var response = []
+
+          for (var key in res) {
+            console.log(key, res[key]);
+            var obj = {"className": key, "probability": res[key]}
+            response.push(obj)
+          }
+          console.log(response)
+          return response
+        }
+        return []
+      }
+      else{
+        // use standard mobilenet
+        const result = await this.net.classify(img)
+        return result
       }
     },
       
@@ -187,7 +260,7 @@ export default {
     },
     file: function (val) {
       this.fileName = this.file.name
-      console.log(this.file)
+      // console.log(this.file)
       if(val != null){
         this.fileTrue = false
         
@@ -198,7 +271,7 @@ export default {
       
     },
     fileData: function (val){
-      console.log(val)
+      // console.log(val)
       this.inferImage()
     }
   }
