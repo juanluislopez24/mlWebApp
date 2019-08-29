@@ -21,6 +21,7 @@
           v-for="item in items"
           :key="item.title"
           link
+          :to="item.route"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -34,8 +35,8 @@
     </v-navigation-drawer>
     <v-app-bar dark app elevate-on-scroll color='primary'>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="headline text-uppercase">
-        First ML webpage
+      <v-toolbar-title class="headline text-uppercase" @click="$router.push('/')">
+        Juan's ML webpage
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu
@@ -97,9 +98,9 @@ export default {
   name: 'App',
   data: () => ({
     items: [
-      { title: 'MobileNet', icon: 'mdi-view-dashboard' },
-      { title: 'YOLO', icon: 'mdi-image' },
-      { title: 'DCGAN', icon: 'mdi-help-box' },
+      { title: 'MobileNet', route:'mobilenet',  icon: 'mdi-view-dashboard' },
+      { title: 'YOLO',route:'yolo', icon: 'mdi-image' },
+      { title: 'DCGAN',route:'dcgan', icon: 'mdi-help-box' },
     ],
     right: null,
     icons: [
