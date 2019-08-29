@@ -6,6 +6,7 @@
         <v-col align-self="center">
           <img id="img" crossOrigin :src="fileData" width=227 height=227 style="display:none"/>
           <v-img
+            :style="'display:'+displayImg"
             id="imageToInfer"
             :src="fileData"
             lazy-src="https://picsum.photos/id/11/10/6"
@@ -13,8 +14,8 @@
             max-width="500"
             min-width="200"
           ></v-img>
+          <video :style="'display:'+display" autoplay playsinline muted id="webcam" width="227" height="227"></video>
         </v-col>
-          <video autoplay playsinline muted id="webcam" width="227" height="227"></video>
 
         <v-col>
 
@@ -84,6 +85,8 @@ export default {
     fileTrue: true,
     file: null,
     stop: true,
+    display: 'none',
+    displayImg: 'flex',
     fileName: '  .',
     fileData: 'https://66.media.tumblr.com/898419954d6ff3f7b307c8d128db94c6/tumblr_p814cuvBqb1wzvt9qo3_500.gif',
     results: [],
@@ -172,6 +175,16 @@ export default {
     'vue-web-cam': WebCam
   },
   watch: {
+    stop: function(val) {
+      if(val){
+        this.display = 'none'
+        this.displayImg = 'flex'
+      }
+      else{
+        this.display = 'inline'
+        this.displayImg = 'none'
+      }
+    },
     file: function (val) {
       this.fileName = this.file.name
       console.log(this.file)

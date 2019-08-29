@@ -79,12 +79,13 @@
           <div class="flex-grow-1"></div>
 
           <v-btn
-            v-for="icon in icons"
-            :key="icon"
+            v-for="item in socialMedia"
+            :key="item.icon"
             class="mx-4"
             icon
+            :href="item.link"
           >
-            <v-icon size="24px">{{ icon }}</v-icon>
+            <v-icon size="24px">{{ item.icon }}</v-icon>
           </v-btn>
         </v-card-title>
       </v-card>
@@ -103,6 +104,10 @@ export default {
       { title: 'DCGAN',route:'dcgan', icon: 'mdi-help-box' },
     ],
     right: null,
+    socialMedia: [
+      {icon: 'mdi-linkedin', link: 'https://linkedin.com/in/juanluislopez24'},
+      {icon: 'mdi-github-circle', link: 'https://github.com/juanluislopez24'},
+    ],
     icons: [
         'mdi-linkedin',
         'mdi-github-circle',
