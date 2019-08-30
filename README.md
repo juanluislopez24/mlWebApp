@@ -9,3 +9,8 @@ Clone the repo and open a terminal inside.
 1. `cd frontend`
 2. `npm install`
 3. `npm run serve`
+
+
+## Demo 
+Mobile net at /mobilenet
+https://makemoney-4f395.web.app/
