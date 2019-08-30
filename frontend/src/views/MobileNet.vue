@@ -1,69 +1,25 @@
 <template>
   <div id="mobilenet">
+    <img id="img" crossOrigin :src="fileData" width=227 height=227 style="display:none"/>
     <v-container>
-      <v-row algin="center" justify="center">
-        <v-col></v-col>
-        <v-col align-self="center">
-          <img id="img" crossOrigin :src="fileData" width=227 height=227 style="display:none"/>
+      <v-row align="start" justify="center">
+        <v-col cols="5">
           <v-img
             :style="'display:'+displayImg"
             id="imageToInfer"
             :src="fileData"
             lazy-src="https://picsum.photos/id/11/10/6"
-            aspect-ratio="1"
-            max-width="500"
-            min-width="200"
+            max-height="300px"
+            max-width="500px"
+            min-height="300px"
+            min-width="500px"
           ></v-img>
-          <video :style="'display:'+display" autoplay playsinline muted id="webcam" width="227" height="227"></video>
+          <video :style="'display:'+display" autoplay playsinline muted id="webcam" width="500" height="300"></video>
+          <video style="display:none" autoplay playsinline muted id="webcam" width="227" height="227" ></video>
+          <!-- <img id="webcamimg" crossOrigin :src="fileData" width=227 height=227 style="display:none"/> -->
         </v-col>
 
-        <v-col>
-
-        </v-col>
-      </v-row>
-      <v-row align="center" justify="center">
-        <v-col cols=5>
-          <v-file-input
-            v-model="file"
-            accept="image/png, image/jpeg, image/bmp, image/jpg"
-            placeholder="Pick an image to process"
-            prepend-icon="mdi-camera"
-            label="Image"
-            @change="loadFile"
-          ></v-file-input>          
-        </v-col>
-        <v-col cols=5> 
-          <v-btn v-if="stop==true" large width=100% color="primary" @click="captureCam">Use Camera</v-btn>
-          <v-btn v-else large width=100% color="primary" @click="stop=true">Stop Camera</v-btn>
-        </v-col>
-      </v-row>
-      <!-- <v-row class="mb-6" algin="start" justify="center">
-        <v-col cols=1>
-          <v-btn :disabled="fileTrue" color="primary" @click="inferImage()">Infer</v-btn>
-        </v-col>
-      </v-row> -->
-      <v-row align="start" justify="center">
-        <v-col cols=1>
-          <v-switch v-model="knn" label="Activate Knn"></v-switch>
-        </v-col>
-      </v-row>
-      <v-row align="start" justify="center">
-        <v-col cols=5>
-          <v-text-field
-            label="New Class"
-            v-model="newClass"
-            placeholder="Type your new class to train..."
-            outlined
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row align="start" justify="center">
-        <v-col cols=1>
-          <v-btn color="primary" width=50% large @click="addExample()">Train</v-btn>
-        </v-col>
-      </v-row>
-      <v-row class="mb-6" align="start" justify="center">
-        <v-col cols=7>
+        <v-col cols="5">
           <v-simple-table>
             <thead>
               <tr>
@@ -78,6 +34,44 @@
               </tr>
             </tbody>
           </v-simple-table>
+        </v-col>
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-col cols="5">
+          <v-file-input
+            v-model="file"
+            accept="image/png, image/jpeg, image/bmp, image/jpg"
+            placeholder="Pick an image to process"
+            prepend-icon="mdi-camera"
+            label="Image"
+            @change="loadFile"
+          ></v-file-input>          
+        </v-col>
+        <v-col cols="5"> 
+          <v-btn v-if="stop==true" large width=100% color="primary" @click="captureCam">Use Camera</v-btn>
+          <v-btn v-else large width=100% color="primary" @click="stop=true">Stop Camera</v-btn>
+        </v-col>
+      </v-row>
+      <!-- <v-row class="mb-6" algin="start" justify="center">
+        <v-col cols=1>
+          <v-btn :disabled="fileTrue" color="primary" @click="inferImage()">Infer</v-btn>
+        </v-col>
+      </v-row> -->
+      <v-row align="start" justify="center">
+        <v-col cols="2">
+          <v-switch v-model="knn" label="Activate Knn"></v-switch>
+        </v-col>
+        <v-col cols=5>
+          <v-text-field
+            :disabled="!knn"
+            label="New Class"
+            v-model="newClass"
+            placeholder="Type your new class to train..."
+            outlined
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-btn :disabled="!knn" color="primary" width=100% large @click="addExample()">Train</v-btn>
         </v-col>
       </v-row>
       
@@ -174,7 +168,7 @@ export default {
       const webcamElement = document.getElementById('webcam')
       await this.setupWebcam()
       while (true) {
-    
+        this.fileDataVid = webcamElement.src
         // use mobilenet
         // const result = await this.net.classify(webcamElement);
 
