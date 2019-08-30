@@ -108,7 +108,7 @@ export default {
     displayImg: 'flex',
     fileName: '  .',
     classes:[],
-    fileData: 'https://66.media.tumblr.com/898419954d6ff3f7b307c8d128db94c6/tumblr_p814cuvBqb1wzvt9qo3_500.gif',
+    fileData: 'https://t2.rbxcdn.com/d7326f4e0a63faf7aaa4080900380614',
     results: [],
     rules: [
       value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
